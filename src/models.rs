@@ -1,5 +1,5 @@
-use diesel::Queryable;
 use super::schema::posts;
+use diesel::Queryable;
 
 #[derive(Queryable)]
 pub struct Post {
@@ -10,7 +10,7 @@ pub struct Post {
 }
 
 #[derive(Insertable)]
-#[table_name="posts"]
+#[table_name = "posts"]
 pub struct NewPost<'a> {
     pub title: &'a str,
     pub body: &'a str,
