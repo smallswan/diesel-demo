@@ -19,13 +19,14 @@ use dotenv::dotenv;
 use std::env;
 use std::error::Error;
 
-#[derive(Queryable, PartialEq, Debug)]
+#[derive(QueryableByName, Queryable, PartialEq, Debug)]
+#[table_name = "users"]
 pub struct User {
-    id: i32,
-    name: String,
-    hair_color: Option<String>,
-    created_at: NaiveDateTime,
-    updated_at: NaiveDateTime,
+    pub id: i32,
+    pub name: String,
+    pub hair_color: Option<String>,
+    pub created_at: NaiveDateTime,
+    pub updated_at: NaiveDateTime,
 }
 
 #[derive(Deserialize, Insertable)]
@@ -418,4 +419,24 @@ fn examine_sql_from_explicit_returning() {
     let load_query = users.select(id).order(id.desc());
     let load_sql = "SELECT `users`.`id` FROM `users` ORDER BY `users`.`id` DESC -- binds: []";
     assert_eq!(load_sql, debug_query::<Mysql, _>(&load_query).to_string());
+}
+
+pub fn some_users() -> Vec<User> {
+    let connection = establish_connection();
+
+    use self::schema::users::dsl::*;
+
+    users
+        .order((created_at.desc(), id.desc()))
+        .filter(name.eq("Ruby"))
+        .limit(5)
+        .load::<User>(&connection)
+        .expect("Error loading users")
+}
+
+pub fn all_users() -> QueryResult<Vec<User>> {
+    use diesel::sql_query;
+    let connection = establish_connection();
+    let users = sql_query("SELECT * FROM users ORDER BY id").load(&connection);
+    users
 }
