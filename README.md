@@ -16,4 +16,8 @@ cargo run --bin write_post
 cargo run --bin publish_post
 
 cargo run --bin show_posts
+
+cargo run --bin add_user
+
+cargo test insert_get_results_batch -- --nocapture
 ```
