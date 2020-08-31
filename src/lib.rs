@@ -426,6 +426,17 @@ pub fn some_users() -> Vec<User> {
 
     use self::schema::users::dsl::*;
 
+    let distinct_name = users
+        .select(name)
+        .distinct()
+        .load::<String>(&connection)
+        .unwrap();
+
+    println!("{:?}", distinct_name);
+
+    let count = users.count().execute(&connection).unwrap();
+    println!("there are {} users", count);
+
     users
         .order((created_at.desc(), id.desc()))
         .filter(name.eq("Ruby"))
