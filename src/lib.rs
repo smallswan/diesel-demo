@@ -425,6 +425,9 @@ pub fn some_users() -> Vec<User> {
     let connection = establish_connection();
 
     use self::schema::users::dsl::*;
+    let all_name = users.select(name).load::<String>(&connection).unwrap();
+
+    println!("all_name : {:?}", all_name);
 
     let distinct_name = users
         .select(name)
@@ -432,10 +435,13 @@ pub fn some_users() -> Vec<User> {
         .load::<String>(&connection)
         .unwrap();
 
-    println!("{:?}", distinct_name);
+    println!("distinct_name : {:?}", distinct_name);
 
     let count = users.count().execute(&connection).unwrap();
-    println!("there are {} users", count);
+    println!("there are {} users ?", count);
+
+    let count2: i64 = users.count().get_result::<i64>(&connection).unwrap();
+    println!("there are {} users !", count2);
 
     users
         .order((created_at.desc(), id.desc()))
@@ -450,4 +456,21 @@ pub fn all_users() -> QueryResult<Vec<User>> {
     let connection = establish_connection();
     let users = sql_query("SELECT * FROM users ORDER BY id").load(&connection);
     users
+}
+
+pub fn update_users() -> QueryResult<usize> {
+    use schema::users::dsl::*;
+    let connection = establish_connection();
+
+    let updated_row = diesel::update(users.filter(name.eq("Rust")))
+        .set((name.eq("Ruby"), hair_color.eq(Some("yellow"))))
+        .execute(&connection);
+
+    println!("update Ruby to Rust, updated_row : {:?}", updated_row);
+
+    let updated_row = diesel::update(users.filter(id.eq(1)))
+        .set(name.eq("James"))
+        .execute(&connection);
+
+    updated_row
 }

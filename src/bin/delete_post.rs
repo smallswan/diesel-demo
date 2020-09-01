@@ -13,4 +13,9 @@ fn main() {
         .expect("Error deleting posts");
 
     println!("Deleted {} posts", num_deleted);
+
+    let num_deleted = diesel::delete(posts.filter(id.eq(1)))
+        .execute(&connection)
+        .expect("Error deleting post[id=1]");
+    println!("Deleted post which id = 1 , is Ok : {}", num_deleted == 1);
 }
