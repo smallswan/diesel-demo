@@ -39,4 +39,6 @@ fn main() {
 
     let new_id = explicit_returning(&connect).unwrap();
     println!("return id = {}", new_id);
+
+    replace_into_users();
 }

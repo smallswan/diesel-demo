@@ -21,3 +21,15 @@ cargo run --bin add_user
 
 cargo test insert_get_results_batch -- --nocapture
 ```
+
+## Diesel Function
+```
+debug_query
+delete
+insert_into
+insert_or_ignore_into
+replace_into
+select
+sql_query
+update
+```

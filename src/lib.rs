@@ -458,6 +458,13 @@ pub fn all_users() -> QueryResult<Vec<User>> {
     users
 }
 
+pub fn delete_all_users() -> usize {
+    use schema::users::dsl::*;
+    let connection = establish_connection();
+    let delete_user_num = diesel::delete(users).execute(&connection).unwrap();
+    delete_user_num
+}
+
 pub fn update_users() -> QueryResult<usize> {
     use schema::users::dsl::*;
     let connection = establish_connection();
@@ -473,4 +480,45 @@ pub fn update_users() -> QueryResult<usize> {
         .execute(&connection);
 
     updated_row
+}
+
+pub fn replace_into_users() {
+    use self::schema::users::dsl::*;
+    let connection = establish_connection();
+
+    diesel::replace_into(users)
+        .values(&vec![
+            (id.eq(1), name.eq("Sean2")),
+            (id.eq(2), name.eq("Tess2")),
+        ])
+        .execute(&connection)
+        .unwrap();
+
+    diesel::replace_into(users)
+        .values((id.eq(1), name.eq("Jim")))
+        .execute(&connection)
+        .unwrap();
+    let names = users.select(name).order(id).load::<String>(&connection);
+
+    println!("{:?}", names);
+
+    diesel::insert_or_ignore_into(users)
+        .values((id.eq(1), name.eq("Jim")))
+        .execute(&connection)
+        .unwrap();
+
+    diesel::insert_or_ignore_into(users)
+        .values(&vec![
+            (id.eq(1), name.eq("Sean")),
+            (id.eq(2), name.eq("Tess")),
+        ])
+        .execute(&connection)
+        .unwrap();
+
+    let names = users
+        .select(name)
+        .order(id)
+        .load::<String>(&connection)
+        .unwrap();
+    println!("{:?}", names);
 }

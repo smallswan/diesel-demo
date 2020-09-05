@@ -18,4 +18,7 @@ fn main() {
             user.id, user.name, user.hair_color, user.created_at
         );
     }
+
+    let delete_users_num = delete_all_users();
+    println!("delete_users_num : {}", delete_users_num);
 }
